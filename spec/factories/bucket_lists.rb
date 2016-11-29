@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :bucket_list do
-    name { Faker::Name.title }
+    sequence(:name) { |n| "#{Faker::Name.title} #{n}" }
     user nil
   end
 end
