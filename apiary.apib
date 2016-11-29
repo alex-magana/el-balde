@@ -103,7 +103,7 @@ List a single user.
 + Response 200 (application/json)
 
     + Body
-
+    
             {
                 "id": <id>,
                 "name": "<first_name> <last_name>",
@@ -121,7 +121,7 @@ Update a user.
     + Headers
 
             Authorization: "<authentication_token>"
-
+    
     + Body
 
             {
@@ -150,13 +150,13 @@ Delete a user.
 + Request (application/json)
 
     + Headers
-
+    
             Authorization: "<authentication_token>"
 
 + Response 200 (application/json)
 
     + Body
-
+    
             {
                 "message": "User deleted successfully."
             }
@@ -178,7 +178,7 @@ The body section of the request constitutes the name of the bucket list to be cr
             Authorization: "<authentication_token>"
 
     + Body
-
+    
             {
                 "name": "<bucket_list_name>"
             }
@@ -198,7 +198,7 @@ The body section of the request constitutes the name of the bucket list to be cr
 
 ### List all bucket lists [GET]
 
-List all bucketlists and their corresponding items
+List all bucketlists and their corresponding items 
 for the logged in user.
 
 Optional query parameters:
@@ -337,7 +337,7 @@ Delete this single bucket list.
 + Request (application/json)
 
     + Headers
-
+  
             Authorization: "<authentication_token>"
 
 + Response 200 (application/json)
@@ -352,7 +352,7 @@ Delete this single bucket list.
 
 ### Search a bucket list by name [GET]
 
-A search can be made for a bucket list by providing the
+A search can be made for a bucket list by providing the 
 `q = <name>`to the url.
 `<name>` is the name of the bucket list you want to search.
 The response received constitutes the bucket lists containing the supplied
@@ -361,7 +361,7 @@ string in their name.
 + Request (application/json)
 
     + Headers
-
+        
             Authorization: "<authentication_token>"
 
 + Response 200 (application/json)
@@ -436,7 +436,7 @@ Create a new item in the given bucket list.
 + Request (application/json)
 
     + Headers
-
+ 
             Authorization: "<authentication_token>"
 
     + Body
@@ -484,7 +484,7 @@ Optional query parameters:
 + Response 200 (application/json)
 
     + Body
-
+    
             [
                 {
                     "id": <id>,
@@ -524,7 +524,7 @@ Get a single item in a bucket list.
 + Response 200 (application/json)
 
     + Body
-
+    
             {
                 "id": <id>,
                 "name": "<name>",
@@ -570,7 +570,7 @@ Delete an item in a bucket list.
 + Request (application/json)
 
     + Headers
-
+        
             Authorization: "<authentication_token>"
 
 + Response 200 (application/json)
