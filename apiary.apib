@@ -3,8 +3,8 @@ HOST: http://elbalde.herokuapp.com/api/v1
 
 # el-balde API (v1)
 
-Is a simple API for bucketlist design.
-El-balde is a bucket list service. It exposes an API allowing
+El-balde is an API for bucket list design.
+It exposes an API allowing
 consumers to create and manage bucket lists.
 This API provides endpoints for the following operations.
 
@@ -180,7 +180,9 @@ The body section of the request constitutes the name of the bucket list to be cr
     + Body
     
             {
-                "name": "<bucket_list_name>"
+                "bucket_list": { 
+                                    "name": "<bucket_list_name>"
+                                }
             }
 
 + Response 201 (application/json)
@@ -546,8 +548,10 @@ Update a bucket list item.
     + Body
 
             {
-                "done": true,
-                "name": "<new name>"
+                "bucket_list_item": {
+                                        "done": true,
+                                        "name": "<new name>"
+                                    }
             }
 
 + Response 200 (application/json)
