@@ -9,3 +9,20 @@
   { role_name: "ADMIN" },
   { role_name: "N_USER" }
 ].each { |role_attributes| Role.create(role_attributes) }
+
+[
+  {
+    first_name: "Admin",
+    last_name: "Admin",
+    email: "admin@admin.co",
+    password: "admin",
+    role_id: "1"
+  },
+  {
+    first_name: "Mary",
+    last_name: "Littel",
+    email: "flavie@schmitt.co",
+    password: "anewpassword",
+    role_id: "2"
+  }
+].each { |user_attributes| User.create(user_attributes) }
