@@ -11,7 +11,7 @@ Documentation - https://elbalde.herokuapp.com/
 
 Endpoints - https://elbalde.herokuapp.com/api/v1
 
-Source code - https://github.com/andela-amagana/el-balde.
+Source code - https://github.com/andela-amagana/el-balde
 
 ## API Features
 
