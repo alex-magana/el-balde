@@ -42,8 +42,7 @@ module Api
           :last_name,
           :email,
           :password,
-          :password_confirmation,
-          :authentication_token
+          :password_confirmation
         )
       end
     end

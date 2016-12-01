@@ -33,6 +33,10 @@ class User < ApplicationRecord
   before_validation :set_role, on: :create
   before_save :downcase_email
 
+  def user_name
+    "#{first_name} #{last_name}"
+  end
+
   private
 
   def set_role

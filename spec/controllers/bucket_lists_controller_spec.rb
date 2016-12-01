@@ -4,7 +4,7 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
   set_up
 
   before do
-    set_authentication_header
+    set_authentication_header(authentication_token)
   end
 
   subject(:bucket_list_unit) { create :bucket_list, user_id: user.id }
@@ -21,7 +21,7 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
         get :index, params: { page: parameter_page, limit: parameter_limit }
       end
 
-      it "sets @bucket_lists to a list of all created bucket lists" do
+      it "returns bucket lists equivalent to the set limit" do
         expect(assigns(:bucket_lists).count).to eq parameter_limit
       end
 
@@ -43,16 +43,32 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
   end
 
   describe "#show" do
-    before(:each) do
-      get :show, params: { id: bucket_list_unit.id }, format: :json
+    context "with valid params" do
+      before(:each) do
+        get :show, params: { id: bucket_list_unit.id }
+      end
+
+      it "sets @bucket_list to a record of an existing bucket list" do
+        expect(assigns(:bucket_list)).to eq(bucket_list_unit)
+      end
+
+      it "returns a status code denoting success" do
+        expect(response).to have_http_status(:success)
+      end
     end
 
-    it "sets @bucket_list to a record of an existing bucket list" do
-      expect(assigns(:bucket_list)).to eq(bucket_list_unit)
-    end
+    context "with invalid params" do
+      before(:each) do
+        get :show, params: { id: bucket_list_unit.id * 0 }
+      end
 
-    it "returns a status code denoting success" do
-      expect(response).to have_http_status(:success)
+      it "sets @bucket_list to nil" do
+        expect(assigns(:bucket_list)).to be nil
+      end
+
+      it "returns a status code denoting not_found" do
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 
@@ -65,7 +81,7 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
                  :bucket_list,
                  user_id: user.id
                )
-             }, format: :json
+             }
       end
 
       it "creates a new bucket_list" do
@@ -74,7 +90,7 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
         ).by(1)
       end
 
-      it "sets @user to the newly created user" do
+      it "sets @bucketlist to an instance of BucketList" do
         create_bucket_list_request
         expect(assigns(:bucket_list)).to be_a(BucketList)
         expect(assigns(:bucket_list)).to be_persisted
@@ -94,7 +110,7 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
                  :bucket_list,
                  name: nil
                )
-             }, format: :json
+             }
       end
 
       it "does not create a new bucket_list" do
@@ -126,7 +142,7 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
             params: {
               id: bucket_list_unit.id,
               bucket_list: new_attributes
-            }, format: :json
+            }
         bucket_list_unit.reload
       end
 
@@ -149,7 +165,7 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
             params: {
               id: bucket_list_unit.id,
               bucket_list: invalid_new_attributes
-            }, format: :json
+            }
         bucket_list_unit.reload
       end
 

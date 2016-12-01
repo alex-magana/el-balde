@@ -7,7 +7,7 @@ RSpec.describe "Users", type: :request do
     context "with valid user id" do
       let(:show_user_request) do
         get "/api/v1/users/#{user.id}",
-            headers: { Authorization: "Bearer #{authentication_token}" }
+            headers: set_request_authentication_header
       end
 
       before(:each) do
@@ -28,7 +28,7 @@ RSpec.describe "Users", type: :request do
     context "with invalid user id" do
       let(:invalid_show_user_request) do
         get "/api/v1/users/#{0}",
-            headers: { Authorization: "Bearer #{authentication_token}" }
+            headers: set_request_authentication_header
       end
 
       before(:each) do
@@ -53,7 +53,7 @@ RSpec.describe "Users", type: :request do
              params: {
                user: attributes_for(:user)
              },
-             headers: { Authorization: "Bearer #{authentication_token}" }
+             headers: set_request_authentication_header
       end
 
       before(:each) do
@@ -76,7 +76,7 @@ RSpec.describe "Users", type: :request do
              params: {
                user: attributes_for(:user, first_name: nil)
              },
-             headers: { Authorization: "Bearer #{authentication_token}" }
+             headers: set_request_authentication_header
       end
 
       before(:each) do
@@ -109,7 +109,7 @@ RSpec.describe "Users", type: :request do
             params: {
               user: new_attributes
             },
-            headers: { Authorization: "Bearer #{authentication_token}" }
+            headers: set_request_authentication_header
       end
 
       it "updates the user first_name and email" do
@@ -138,7 +138,7 @@ RSpec.describe "Users", type: :request do
             params: {
               user: new_attributes
             },
-            headers: { Authorization: "Bearer #{authentication_token}" }
+            headers: set_request_authentication_header
       end
 
       it "does not update the user first_name and email" do
@@ -158,7 +158,7 @@ RSpec.describe "Users", type: :request do
   describe "DELETE /api/v1/users/:id" do
     let(:delete_user_request) do
       delete "/api/v1/users/#{user.id}",
-             headers: { Authorization: "Bearer #{authentication_token}" }
+             headers: set_request_authentication_header
     end
 
     before(:each) do

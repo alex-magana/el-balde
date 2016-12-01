@@ -78,4 +78,10 @@ RSpec.describe User, type: :model do
       ).save
     ).to be_truthy
   end
+
+  describe "#user_name" do
+    it "returns the user's full name" do
+      expect(user.user_name).to eq "#{user.first_name} #{user.last_name}"
+    end
+  end
 end

@@ -11,8 +11,12 @@ module Helpers
     end
   end
 
-  def set_authentication_header
+  def set_authentication_header(authentication_token)
     request.headers["Authorization"] = "Bearer #{authentication_token}"
+  end
+
+  def set_request_authentication_header
+    { Authorization: "Bearer #{authentication_token}" }
   end
 
   def json_response(response)
