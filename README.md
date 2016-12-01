@@ -125,3 +125,5 @@ Response (application/json)
 ## Limitations
 
   1. JWT tokens are invalidated by reference to persisted generated tokens.
+  2. COR is not supported.
+  3. Rate limiting is not supported.
