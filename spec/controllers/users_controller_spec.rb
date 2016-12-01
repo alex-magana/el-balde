@@ -4,7 +4,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   set_up
 
   before do
-    set_authentication_header
+    set_authentication_header(authentication_token)
   end
 
   it_behaves_like "api_controller"
@@ -12,7 +12,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe "#show" do
     context "with valid id" do
       before(:each) do
-        get :show, params: { id: user.id }, format: :json
+        get :show, params: { id: user.id }
       end
 
       it "sets @user to a record of an existing user" do
@@ -26,7 +26,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     context "with invalid id" do
       before(:each) do
-        get :show, params: { id: "id" }, format: :json
+        get :show, params: { id: "id" }
       end
 
       it "returns a status code denoting not_found" do
@@ -44,7 +44,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
                  :user,
                  password_confirmation: "anewpassword"
                ),
-             }, format: :json
+             }
       end
 
       it "creates a new user" do
@@ -74,7 +74,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
                  email: "abc.com",
                  password_confirmation: "anewpassword"
                )
-             }, format: :json
+             }
       end
 
       it "does not create a new user" do
@@ -88,7 +88,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       it "returns unprocessable_entity status" do
         invalid_create_user_request
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
@@ -105,7 +105,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       before(:each) do
         put :update,
-            params: { id: user.id, user: new_attributes }, format: :json
+            params: { id: user.id, user: new_attributes }
         user.reload
       end
 
@@ -129,7 +129,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       before(:each) do
         put :update,
-            params: { id: user.id, user: invalid_new_attributes }, format: :json
+            params: { id: user.id, user: invalid_new_attributes }
         user.reload
       end
 
@@ -146,14 +146,14 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it "returns unprocessable_entity status" do
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
 
   describe "#destroy" do
     let(:delete_user_request) do
-      delete :destroy, params: { id: user.id }, format: :json
+      delete :destroy, params: { id: user.id }
     end
 
     before(:each) do

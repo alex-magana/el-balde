@@ -7,11 +7,9 @@ module Api
 
       def index
         if index_params[:q]
-          @bucket_lists = BucketList.search_by_name(index_params[:q])
+          @bucket_lists = search_by_name(index_params[:q].downcase)
         else
-          @bucket_lists = BucketList.where(user_id: current_user.id).paginate(
-            index_params[:page].to_i, index_params[:limit].to_i
-          )
+          @bucket_lists = paginate
         end
         render_response(@bucket_lists)
       end
@@ -51,6 +49,16 @@ module Api
 
       def set_user
         params[:bucket_list][:user_id] = current_user.id
+      end
+
+      def search_by_name(name)
+        BucketList.search_by_name(name).
+          paginate(index_params[:page].to_i, index_params[:limit].to_i)
+      end
+
+      def paginate
+        BucketList.where(user_id: current_user.id).
+          paginate(index_params[:page].to_i, index_params[:limit].to_i)
       end
 
       def bucket_list_params

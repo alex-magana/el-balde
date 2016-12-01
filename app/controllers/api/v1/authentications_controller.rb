@@ -17,7 +17,7 @@ module Api
       def logout
         token_valid = Authentication.invalidate_token(current_user, true)
         unless !token_valid
-          render_response({ message: logout_successful }, :ok)
+          render_response(message: logout_successful)
         end
       end
 
@@ -33,13 +33,11 @@ module Api
 
       def commence_session
         auth_token = JsonWebToken.encode(user_id: @user.id)
-        render_response({ auth_token: auth_token, message: login_successful },
-                        :ok)
+        render_response(auth_token: auth_token, message: login_successful)
       end
 
       def resume_session(token)
-        render_response({ auth_token: token, message: already_logged_in },
-                        :ok)
+        render_response(auth_token: token, message: already_logged_in)
       end
 
       def manage_token

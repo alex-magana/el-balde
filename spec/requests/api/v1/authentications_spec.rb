@@ -46,7 +46,7 @@ RSpec.describe "Authentications", type: :request do
     context "with valid token" do
       let(:logout_request) do
         get "/api/v1/auth/logout",
-            headers: { Authorization: "Bearer #{authentication_token}" }
+            headers: set_request_authentication_header
       end
 
       it "terminates the user's session" do

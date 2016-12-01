@@ -4,53 +4,122 @@ RSpec.describe Api::V1::BucketListItemsController, type: :controller do
   set_up
 
   before do
-    set_authentication_header
+    set_authentication_header(authentication_token)
   end
 
   let!(:bucket_list) { create :bucket_list, user: user }
 
   describe "#index" do
-    parameter_page = 2
-    parameter_limit = 5
+    context "with valid params" do
+      parameter_page = 2
+      parameter_limit = 5
 
-    before do
-      create_list(:bucket_list_item, 50, bucket_list_id: bucket_list.id)
+      before do
+        create_list(:bucket_list_item, 50, bucket_list_id: bucket_list.id)
 
-      get :index,
-          params: {
-            bucket_list_id: bucket_list.id,
-            page: parameter_page,
-            limit: parameter_limit
-          }
+        get :index,
+            params: {
+              bucket_list_id: bucket_list.id,
+              page: parameter_page,
+              limit: parameter_limit
+            }
+      end
+
+      it "returns bucket list items equivalent to the set limit" do
+        expect(json_response(response.body).count).to eq parameter_limit
+      end
+
+      it "returns a status code denoting success" do
+        expect(response).to have_http_status(:success)
+      end
     end
 
-    it "sets @bucket_lists_items to a list of all created bucket lists items" do
-      expect(json_response(response.body).count).to eq parameter_limit
+    context "with invalid params" do
+      parameter_page = "$#%!1}"
+      parameter_limit = "$#%!1}"
+
+      before do
+        create_list(:bucket_list_item, 40, bucket_list_id: bucket_list.id)
+
+        get :index,
+            params: {
+              bucket_list_id: bucket_list.id,
+              page: parameter_page,
+              limit: parameter_limit
+            }
+      end
+
+      it "returns results equal to the default limit of 20" do
+        expect(json_response(response.body).count).to eq 20
+      end
+
+      it "returns a status code denoting success" do
+        expect(response).to have_http_status(:success)
+      end
     end
 
-    it "returns a status code denoting success" do
-      expect(response).to have_http_status(:success)
+    context "with invalid bucket list id" do
+      parameter_page = "$#%!1}"
+      parameter_limit = "$#%!1}"
+
+      before do
+        get :index,
+            params: {
+              bucket_list_id: bucket_list.id * 0,
+              page: parameter_page,
+              limit: parameter_limit
+            }
+      end
+
+      it "returns an error message denoting absence of record" do
+        expect(json_response(response.body).key?(:error)).to be true
+        expect(json_response(response.body)[:error]).to eq "Record not found."
+      end
+
+      it "returns a status code denoting not_found" do
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 
   describe "#show" do
-    before(:each) do
-      create_list(:bucket_list_item, 20, bucket_list_id: bucket_list.id)
-      bucket_list_item = BucketListItem.find(10)
-      get :show, params: {
-        bucket_list_id: bucket_list.id,
-        id: bucket_list_item.id
-      }, format: :json
+    context "with valid params" do
+      before(:each) do
+        create_list(:bucket_list_item, 20, bucket_list_id: bucket_list.id)
+        bucket_list_item = BucketListItem.find(10)
+        get :show, params: {
+          bucket_list_id: bucket_list.id,
+          id: bucket_list_item.id
+        }
+      end
+
+      it "returns a response with a record of an existing bucket list item" do
+        bucket_list_item = BucketListItem.find(10)
+
+        expect(json_response(response.body)[:name]).to eq(bucket_list_item.name)
+      end
+
+      it "returns a status code denoting success" do
+        expect(response).to have_http_status(:success)
+      end
     end
 
-    it "sets @bucket_list_item to a record of an existing bucket list item" do
-      bucket_list_item = BucketListItem.find(10)
+    context "with invalid params" do
+      before(:each) do
+        get :show, params: {
+          bucket_list_id: 0,
+          id: "$%^^%2"
+        }
+      end
 
-      expect(json_response(response.body)[:name]).to eq(bucket_list_item.name)
-    end
+      it "returns a message denoting record is absent" do
+        expect(json_response(response.body).key?(:error)).to be true
+        expect(json_response(response.body)[:error]).to eq "Record not found."
+      end
 
-    it "returns a status code denoting success" do
-      expect(response).to have_http_status(:success)
+      it "returns a status code denoting not_found" do
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 
@@ -64,7 +133,7 @@ RSpec.describe Api::V1::BucketListItemsController, type: :controller do
                  :bucket_list_item,
                  bucket_list_id: bucket_list.id
                )
-             }, format: :json
+             }
       end
 
       it "creates a new bucket_list" do
@@ -95,7 +164,7 @@ RSpec.describe Api::V1::BucketListItemsController, type: :controller do
                  name: nil,
                  bucket_list_id: bucket_list.id
                )
-             }, format: :json
+             }
       end
 
       it "does not create a new bucket_list_item" do
@@ -133,7 +202,7 @@ RSpec.describe Api::V1::BucketListItemsController, type: :controller do
               bucket_list_id: bucket_list.id,
               id: bucket_list_item.id,
               bucket_list_item: new_attributes
-            }, format: :json
+            }
         bucket_list_item.reload
       end
 
@@ -161,7 +230,7 @@ RSpec.describe Api::V1::BucketListItemsController, type: :controller do
               bucket_list_id: bucket_list.id,
               id: bucket_list_item.id,
               bucket_list: invalid_new_attributes
-            }, format: :json
+            }
         bucket_list.reload
       end
 

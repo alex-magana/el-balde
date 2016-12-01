@@ -11,7 +11,7 @@ RSpec.describe "BucketLists", type: :request do
       parameter_limit = 1
       get "/api/v1/bucketlists",
           params: { page: parameter_page, limit: parameter_limit },
-          headers: { Authorization: "Bearer #{authentication_token}" }
+          headers: set_request_authentication_header
     end
 
     it "returns a list of created bucket lists" do
@@ -30,7 +30,7 @@ RSpec.describe "BucketLists", type: :request do
   describe "GET /api/v1/bucketlists/:id" do
     before(:each) do
       get "/api/v1/bucketlists/#{bucket_list.id}",
-          headers: { Authorization: "Bearer #{authentication_token}" }
+          headers: set_request_authentication_header
     end
 
     it "returns an existing bucket list" do
@@ -38,7 +38,7 @@ RSpec.describe "BucketLists", type: :request do
 
       expect(endpoint_response[:name]).to eq json_response(
         bucket_list.to_json
-        )[:name]
+      )[:name]
     end
 
     it "returns a status code denoting success" do
@@ -53,7 +53,7 @@ RSpec.describe "BucketLists", type: :request do
              params: {
                bucket_list: attributes_for(:bucket_list)
              },
-             headers: { Authorization: "Bearer #{authentication_token}" }
+             headers: set_request_authentication_header
       end
 
       it "creates a new bucket_list" do
@@ -76,7 +76,7 @@ RSpec.describe "BucketLists", type: :request do
              params: {
                bucket_list: attributes_for(:bucket_list, name: "1234")
              },
-             headers: { Authorization: "Bearer #{authentication_token}" }
+             headers: set_request_authentication_header
       end
 
       it "returns errors indicating invalid params" do
@@ -103,7 +103,7 @@ RSpec.describe "BucketLists", type: :request do
             params: {
               bucket_list: new_attributes
             },
-            headers: { Authorization: "Bearer #{authentication_token}" }
+            headers: set_request_authentication_header
       end
 
       it "updates the name of the requested bucket list" do
@@ -127,7 +127,7 @@ RSpec.describe "BucketLists", type: :request do
             params: {
               bucket_list: new_attributes
             },
-            headers: { Authorization: "Bearer #{authentication_token}" }
+            headers: set_request_authentication_header
       end
 
       it "updates the name of the requested bucket list" do
@@ -146,7 +146,7 @@ RSpec.describe "BucketLists", type: :request do
   describe "DELETE /api/v1/bucketlists/:id" do
     let(:delete_bucket_list_request) do
       delete "/api/v1/bucketlists/#{bucket_list.id}",
-             headers: { Authorization: "Bearer #{authentication_token}" }
+             headers: set_request_authentication_header
     end
 
     before(:each) do

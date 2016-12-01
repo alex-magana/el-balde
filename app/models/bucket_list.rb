@@ -18,6 +18,6 @@ class BucketList < ApplicationRecord
             }
 
   def self.search_by_name(name)
-    where("name LIKE ?", "%#{name}%")
+    where("lower(name) LIKE ?", "%#{name}%")
   end
 end
