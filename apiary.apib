@@ -180,9 +180,9 @@ The body section of the request constitutes the name of the bucket list to be cr
     + Body
     
             {
-                "bucket_list": { 
-                                    "name": "<bucket_list_name>"
-                                }
+                "list": { 
+                            "name": "<bucket_list_name>"
+                        }
             }
 
 + Response 201 (application/json)
@@ -314,7 +314,7 @@ Update the given bucket list.
     + Body
 
             {
-                "bucket_list": {
+                "list": {
                                     "field_name": "<field_value>"
                                }
             }
@@ -444,9 +444,9 @@ Create a new item in the given bucket list.
     + Body
 
             {
-                "bucket_list_item": {
-                                        "name": "<name>"
-                                    }
+                "item": {
+                            "name": "<name>"
+                        }
             }
 
 + Response 201 (application/json)
@@ -548,10 +548,10 @@ Update a bucket list item.
     + Body
 
             {
-                "bucket_list_item": {
-                                        "done": true,
-                                        "name": "<new name>"
-                                    }
+                "item": {
+                            "done": true,
+                            "name": "<new name>"
+                        }
             }
 
 + Response 200 (application/json)
