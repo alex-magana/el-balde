@@ -1,21 +1,21 @@
 require "rails_helper"
 
-RSpec.describe "BucketListItems", type: :request do
+RSpec.describe "Items", type: :request do
   set_up
 
-  let!(:bucket_list) { create :bucket_list, user: user }
+  let!(:list) { create :list, user: user }
 
-  subject!(:bucket_list_item) do
-    create :bucket_list_item,
-           bucket_list_id: bucket_list.id
+  subject!(:item) do
+    create :item,
+           list_id: list.id
   end
 
-  describe "GET /bucketlists/:bucket_list_id/items" do
+  describe "GET /bucketlists/:list_id/items" do
     before(:each) do
       parameter_page = 1
       parameter_limit = 1
 
-      get "/api/v1/bucketlists/#{bucket_list.id}/items",
+      get "/api/v1/bucketlists/#{list.id}/items",
           params: { page: parameter_page, limit: parameter_limit },
           headers: set_request_authentication_header
     end
@@ -24,7 +24,7 @@ RSpec.describe "BucketListItems", type: :request do
       endpoint_response = json_response(response.body)
 
       expect(endpoint_response[0][:name]).to eq json_response(
-        bucket_list.bucket_list_items.to_json
+        list.items.to_json
       )[0][:name]
     end
 
@@ -33,9 +33,9 @@ RSpec.describe "BucketListItems", type: :request do
     end
   end
 
-  describe "GET /bucketlists/:bucket_list_id/items/:id" do
+  describe "GET /bucketlists/:list_id/items/:id" do
     before(:each) do
-      get "/api/v1/bucketlists/#{bucket_list.id}/items/#{bucket_list_item.id}",
+      get "/api/v1/bucketlists/#{list.id}/items/#{item.id}",
           headers: set_request_authentication_header
     end
 
@@ -43,7 +43,7 @@ RSpec.describe "BucketListItems", type: :request do
       endpoint_response = json_response(response.body)
 
       expect(endpoint_response[:name]).to eq json_response(
-        bucket_list_item.to_json
+        item.to_json
       )[:name]
     end
 
@@ -52,67 +52,67 @@ RSpec.describe "BucketListItems", type: :request do
     end
   end
 
-  describe "POST /bucketlists/:bucket_list_id/items" do
+  describe "POST /bucketlists/:list_id/items" do
     context "with valid params" do
-      let(:create_bucket_list_item_request) do
-        post "/api/v1/bucketlists/#{bucket_list.id}/items",
+      let(:create_item_request) do
+        post "/api/v1/bucketlists/#{list.id}/items",
              params: {
-               bucket_list_item: attributes_for(
-                 :bucket_list_item,
-                 bucket_list_id: bucket_list.id
+               item: attributes_for(
+                 :item,
+                 list_id: list.id
                )
              },
              headers: set_request_authentication_header
       end
 
-      it "creates a new bucket_list" do
-        create_bucket_list_item_request
+      it "creates a new list" do
+        create_item_request
         endpoint_response = json_response(response.body)
         expect(endpoint_response[:name]).to eq json_response(
-          bucket_list_item.to_json
+          item.to_json
         )[:name]
       end
 
       it "returns http success" do
-        create_bucket_list_item_request
+        create_item_request
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid params" do
-      let(:invalid_create_bucket_list_item_request) do
-        post "/api/v1/bucketlists/#{bucket_list.id}/items",
+      let(:invalid_create_item_request) do
+        post "/api/v1/bucketlists/#{list.id}/items",
              params: {
-               bucket_list_item: attributes_for(
-                 :bucket_list_item,
+               item: attributes_for(
+                 :item,
                  name: nil,
-                 bucket_list_id: bucket_list.id
+                 list_id: list.id
                )
              },
              headers: set_request_authentication_header
       end
 
-      it "does not create a new bucket_list_item" do
-        expect { invalid_create_bucket_list_item_request }.to_not change(
-          BucketListItem, :count
+      it "does not create a new item" do
+        expect { invalid_create_item_request }.to_not change(
+          Item, :count
         )
       end
 
-      it "sets @bucket_list_item to a newly "\
-        "created but unsaved bucket_list_item" do
-        invalid_create_bucket_list_item_request
+      it "sets @item to a newly "\
+        "created but unsaved item" do
+        invalid_create_item_request
         endpoint_response = json_response(response.body)
         expect(endpoint_response[:name][0]).to include("can't be blank")
       end
 
       it "returns unprocessable_entity status" do
-        invalid_create_bucket_list_item_request
+        invalid_create_item_request
         expect(response.status).to eq(422)
       end
     end
   end
 
-  describe "PUT /bucketlists/:bucket_list_id/items/:id" do
+  describe "PUT /bucketlists/:list_id/items/:id" do
     context "with valid params" do
       let(:new_attributes) do
         { name: "Three Peaks Challenge", done: true }
@@ -120,26 +120,26 @@ RSpec.describe "BucketListItems", type: :request do
 
       before(:each) do
         put "/api/v1/bucketlists/"\
-              "#{bucket_list.id}/items/#{bucket_list_item.id}",
+              "#{list.id}/items/#{item.id}",
             params: {
-              bucket_list_item: new_attributes
+              item: new_attributes
             },
             headers: set_request_authentication_header
-        bucket_list_item.reload
+        item.reload
       end
 
-      it "updates the name of the requested bucket_list_item" do
+      it "updates the name of the requested item" do
         endpoint_response = json_response(response.body)
 
-        expect(bucket_list_item.name).to eq new_attributes[:name]
-        expect(bucket_list_item.name).to eq endpoint_response[:name]
+        expect(item.name).to eq new_attributes[:name]
+        expect(item.name).to eq endpoint_response[:name]
       end
 
-      it "updates the status of the requested bucket_list" do
+      it "updates the status of the requested list" do
         endpoint_response = json_response(response.body)
 
-        expect(bucket_list_item.done).to eq new_attributes[:done]
-        expect(bucket_list_item.done).to eq endpoint_response[:done]
+        expect(item.done).to eq new_attributes[:done]
+        expect(item.done).to eq endpoint_response[:done]
       end
 
       it "returns http success" do
@@ -154,24 +154,24 @@ RSpec.describe "BucketListItems", type: :request do
 
       before(:each) do
         put "/api/v1/bucketlists/"\
-              "#{bucket_list.id}/items/#{bucket_list_item.id}",
+              "#{list.id}/items/#{item.id}",
             params: {
-              bucket_list: invalid_new_attributes
+              list: invalid_new_attributes
             },
             headers: set_request_authentication_header
-        bucket_list_item.reload
+        item.reload
       end
 
-      it "sets @bucket_list _item to bucket_list_item" do
+      it "sets @list _item to item" do
         endpoint_response = json_response(response.body)
-        expect(assigns(:bucket_list_item)).to eq(bucket_list_item)
+        expect(assigns(:item)).to eq(item)
         expect(endpoint_response[:error]).to include(
           "param is missing or the value"
         )
       end
 
-      it "does not update the name of the requested bucket_list_item" do
-        expect(bucket_list_item.name).to_not eq invalid_new_attributes[:name]
+      it "does not update the name of the requested item" do
+        expect(item.name).to_not eq invalid_new_attributes[:name]
       end
 
       it "returns unprocessable_entity status" do
@@ -180,19 +180,19 @@ RSpec.describe "BucketListItems", type: :request do
     end
   end
 
-  describe "DELETE /bucketlists/:bucket_list_id/items/:id" do
-    let(:delete_bucket_list_item_request) do
+  describe "DELETE /bucketlists/:list_id/items/:id" do
+    let(:delete_item_request) do
       delete "/api/v1/bucketlists/"\
-               "#{bucket_list.id}/items/#{bucket_list_item.id}",
+               "#{list.id}/items/#{item.id}",
              headers: set_request_authentication_header
     end
 
     before(:each) do
-      delete_bucket_list_item_request
+      delete_item_request
     end
 
-    it "destroys a bucket_list" do
-      expect(BucketListItem.where(id: bucket_list_item.id)).not_to exist
+    it "destroys a list" do
+      expect(Item.where(id: item.id)).not_to exist
     end
 
     it "returns http success" do

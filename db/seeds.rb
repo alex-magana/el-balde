@@ -15,7 +15,7 @@
     first_name: "Admin",
     last_name: "Admin",
     email: "admin@admin.co",
-    password: "admin",
+    password: "adminpassword",
     role_id: "1"
   },
   {

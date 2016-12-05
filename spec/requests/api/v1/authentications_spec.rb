@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Authentications", type: :request do
+  include Concerns::Messages
+
   set_up
 
   describe "POST /auth/login" do
@@ -70,7 +72,7 @@ RSpec.describe "Authentications", type: :request do
       it "fails to terminate the user's session" do
         invalid_logout_request
         endpoint_response = json_response(response.body)
-        expect(endpoint_response[:error]).to eq "Invalid request."
+        expect(endpoint_response[:error]).to eq unauthorized_request
       end
 
       it "returns http unathorized" do

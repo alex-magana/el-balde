@@ -4,8 +4,8 @@ module Concerns
       "Record not found."
     end
 
-    def invalid_request
-      "Invalid request."
+    def unauthorized_request
+      "Unauthorized request."
     end
 
     def login_successful
