@@ -1,13 +1,11 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::AuthenticationsController, type: :controller do
+  include Concerns::Messages
+
   set_up
 
-  before do
-    set_authentication_header(authentication_token)
-  end
-
-  describe "#login", skip_before: true do
+  describe "#login" do
     context "with valid params" do
       let(:login_request) do
         post :login,
@@ -43,11 +41,57 @@ RSpec.describe Api::V1::AuthenticationsController, type: :controller do
         expect(response).to have_http_status(:unauthorized)
       end
     end
+
+    context "with an existing valid token" do
+      let(:login_request) do
+        post :login,
+             params: {
+               email: user.email,
+               password: user.password
+             }
+      end
+
+      before(:each) do
+        login_request
+      end
+
+      it "returns http success" do
+        endpoint_response = json_response(response.body)
+
+        expect(endpoint_response.key?(:auth_token)).to be true
+        expect(endpoint_response.key?(:message)).to be true
+        expect(endpoint_response[:message]).to eq already_logged_in
+      end
+    end
+
+    context "without an existing token" do
+      let(:login_request) do
+        post :login,
+             params: {
+               email: user.email,
+               password: user.password
+             }
+      end
+
+      before(:each) do
+        Authentication.destroy_all
+        login_request
+      end
+
+      it "returns http success" do
+        endpoint_response = json_response(response.body)
+
+        expect(endpoint_response.key?(:auth_token)).to be true
+        expect(endpoint_response.key?(:message)).to be true
+        expect(endpoint_response[:message]).to eq login_successful
+      end
+    end
   end
 
   describe "#logout" do
     context "with valid token" do
       before(:each) do
+        set_authentication_header(authentication_token)
         get :logout
       end
 
@@ -70,7 +114,39 @@ RSpec.describe Api::V1::AuthenticationsController, type: :controller do
 
       it "notify the user of an invalid request" do
         expect(json_response(response.body).key?(:error)).to be true
-        expect(json_response(response.body)[:error]).to eq "Invalid request."
+        expect(json_response(response.body)[:error]).to eq unauthorized_request
+      end
+
+      it "returns http unauthorized" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "with an expired token" do
+      before(:each) do
+        set_invalid_token(-2)
+        get :logout
+      end
+
+      it "notify the user of an invalid request" do
+        expect(json_response(response.body).key?(:error)).to be true
+        expect(json_response(response.body)[:error]).to eq unauthorized_request
+      end
+
+      it "returns http unauthorized" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "with a token with invalid registered claims" do
+      before(:each) do
+        set_invalid_token(7)
+        get :logout
+      end
+
+      it "notify the user of an invalid request" do
+        expect(json_response(response.body).key?(:error)).to be true
+        expect(json_response(response.body)[:error]).to eq unauthorized_request
       end
 
       it "returns http unauthorized" do

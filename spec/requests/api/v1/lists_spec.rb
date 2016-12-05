@@ -1,9 +1,9 @@
 require "rails_helper"
 
-RSpec.describe "BucketLists", type: :request do
+RSpec.describe "Lists", type: :request do
   set_up
 
-  subject!(:bucket_list) { create :bucket_list, user: user }
+  subject!(:list) { create :list, user: user }
 
   describe "GET /api/v1/bucketlists" do
     before(:each) do
@@ -18,7 +18,7 @@ RSpec.describe "BucketLists", type: :request do
       endpoint_response = json_response(response.body)
 
       expect(endpoint_response[0][:name]).to eq json_response(
-        bucket_list.to_json
+        list.to_json
       )[:name]
     end
 
@@ -29,7 +29,7 @@ RSpec.describe "BucketLists", type: :request do
 
   describe "GET /api/v1/bucketlists/:id" do
     before(:each) do
-      get "/api/v1/bucketlists/#{bucket_list.id}",
+      get "/api/v1/bucketlists/#{list.id}",
           headers: set_request_authentication_header
     end
 
@@ -37,7 +37,7 @@ RSpec.describe "BucketLists", type: :request do
       endpoint_response = json_response(response.body)
 
       expect(endpoint_response[:name]).to eq json_response(
-        bucket_list.to_json
+        list.to_json
       )[:name]
     end
 
@@ -48,45 +48,43 @@ RSpec.describe "BucketLists", type: :request do
 
   describe "POST /api/v1/bucketlists" do
     context "with valid params" do
-      let(:create_bucket_list_request) do
+      let(:create_list_request) do
         post "/api/v1/bucketlists",
              params: {
-               bucket_list: attributes_for(:bucket_list)
+               list: attributes_for(:list)
              },
              headers: set_request_authentication_header
       end
 
       it "creates a new bucket_list" do
-        create_bucket_list_request
+        create_list_request
         endpoint_response = json_response(response.body)
-        expect(endpoint_response[:name]).to eq request.params[
-          :bucket_list
-          ][:name]
+        expect(endpoint_response[:name]).to eq request.params[:list][:name]
       end
 
       it "returns http success" do
-        create_bucket_list_request
+        create_list_request
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid valid params" do
-      let(:invalid_create_bucket_list_request) do
+      let(:invalid_create_list_request) do
         post "/api/v1/bucketlists",
              params: {
-               bucket_list: attributes_for(:bucket_list, name: "1234")
+               list: attributes_for(:list, name: "1234")
              },
              headers: set_request_authentication_header
       end
 
       it "returns errors indicating invalid params" do
-        invalid_create_bucket_list_request
+        invalid_create_list_request
         endpoint_response = json_response(response.body)
         expect(endpoint_response[:name]).to include "is invalid"
       end
 
       it "returns http unprocessable_entity" do
-        invalid_create_bucket_list_request
+        invalid_create_list_request
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -99,9 +97,9 @@ RSpec.describe "BucketLists", type: :request do
       end
 
       before(:each) do
-        put "/api/v1/bucketlists/#{bucket_list.id}",
+        put "/api/v1/bucketlists/#{list.id}",
             params: {
-              bucket_list: new_attributes
+              list: new_attributes
             },
             headers: set_request_authentication_header
       end
@@ -123,9 +121,9 @@ RSpec.describe "BucketLists", type: :request do
       end
 
       before(:each) do
-        put "/api/v1/bucketlists/#{bucket_list.id}",
+        put "/api/v1/bucketlists/#{list.id}",
             params: {
-              bucket_list: new_attributes
+              list: new_attributes
             },
             headers: set_request_authentication_header
       end
@@ -134,7 +132,7 @@ RSpec.describe "BucketLists", type: :request do
         endpoint_response = json_response(response.body)
 
         expect(endpoint_response[:name]).to include "is invalid"
-        expect(bucket_list.name).to_not eq new_attributes[:name]
+        expect(list.name).to_not eq new_attributes[:name]
       end
 
       it "returns http unprocessable_entity" do
@@ -144,17 +142,17 @@ RSpec.describe "BucketLists", type: :request do
   end
 
   describe "DELETE /api/v1/bucketlists/:id" do
-    let(:delete_bucket_list_request) do
-      delete "/api/v1/bucketlists/#{bucket_list.id}",
+    let(:delete_list_request) do
+      delete "/api/v1/bucketlists/#{list.id}",
              headers: set_request_authentication_header
     end
 
     before(:each) do
-      delete_bucket_list_request
+      delete_list_request
     end
 
     it "destroys a bucket_list" do
-      expect(BucketList.where(id: bucket_list.id)).not_to exist
+      expect(List.where(id: list.id)).not_to exist
     end
 
     it "returns http success" do

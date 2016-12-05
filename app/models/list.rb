@@ -1,8 +1,9 @@
-class BucketList < ApplicationRecord
+class List < ApplicationRecord
+  extend Concerns::ModelMessages
   extend Concerns::Paginate
 
   belongs_to :user
-  has_many :bucket_list_items, dependent: :destroy
+  has_many :items, dependent: :destroy
 
   VALID_REGEX_NAME = /[a-zA-Z]+/
 
@@ -10,14 +11,17 @@ class BucketList < ApplicationRecord
             presence: true,
             format: { with: VALID_REGEX_NAME },
             length: { minimum: 3,
-                      message: "Too short. The minimum length"\
-                               " is 3 characters." },
+                      message: name_length },
             uniqueness: {
               scope: :user_id,
-              message: "A list with a similar name already exists."
+              message: list_name_uniqueness
             }
 
   def self.search_by_name(name)
     where("lower(name) LIKE ?", "%#{name}%")
+  end
+
+  def self.catalog(user, page, limit)
+    where(user_id: user.id).paginate(page, limit)
   end
 end

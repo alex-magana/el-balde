@@ -1,13 +1,13 @@
 require "rails_helper"
 
-RSpec.describe Api::V1::BucketListsController, type: :controller do
+RSpec.describe Api::V1::ListsController, type: :controller do
   set_up
 
   before do
     set_authentication_header(authentication_token)
   end
 
-  subject(:bucket_list_unit) { create :bucket_list, user_id: user.id }
+  subject(:list_unit) { create :list, user_id: user.id }
 
   it_behaves_like "api_controller"
 
@@ -17,12 +17,12 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
       parameter_limit = 5
 
       before(:each) do
-        create_list(:bucket_list, 50, user: user)
+        create_list(:list, 50, user: user)
         get :index, params: { page: parameter_page, limit: parameter_limit }
       end
 
       it "returns bucket lists equivalent to the set limit" do
-        expect(assigns(:bucket_lists).count).to eq parameter_limit
+        expect(assigns(:lists).count).to eq parameter_limit
       end
 
       it "returns a status code denoting success" do
@@ -31,13 +31,13 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
     end
 
     context "with parameter q" do
-      let(:parameter_q) { bucket_list_unit.name }
+      let(:parameter_q) { list_unit.name }
       before(:each) do
         get :index, params: { q: parameter_q }
       end
 
-      it "sets @bucket_lists to a list of all created bucket lists" do
-        expect(assigns(:bucket_lists)[0].name).to include(parameter_q)
+      it "sets @lists to a list of all created bucket lists" do
+        expect(assigns(:lists)[0].name).to include(parameter_q)
       end
     end
   end
@@ -45,11 +45,11 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
   describe "#show" do
     context "with valid params" do
       before(:each) do
-        get :show, params: { id: bucket_list_unit.id }
+        get :show, params: { id: list_unit.id }
       end
 
       it "sets @bucket_list to a record of an existing bucket list" do
-        expect(assigns(:bucket_list)).to eq(bucket_list_unit)
+        expect(assigns(:list)).to eq(list_unit)
       end
 
       it "returns a status code denoting success" do
@@ -59,11 +59,11 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
 
     context "with invalid params" do
       before(:each) do
-        get :show, params: { id: bucket_list_unit.id * 0 }
+        get :show, params: { id: list_unit.id * 0 }
       end
 
       it "sets @bucket_list to nil" do
-        expect(assigns(:bucket_list)).to be nil
+        expect(assigns(:list)).to be nil
       end
 
       it "returns a status code denoting not_found" do
@@ -74,58 +74,58 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
 
   describe "#create" do
     context "with valid params" do
-      let(:create_bucket_list_request) do
+      let(:create_list_request) do
         post :create,
              params: {
-               bucket_list: attributes_for(
-                 :bucket_list,
+               list: attributes_for(
+                 :list,
                  user_id: user.id
                )
              }
       end
 
       it "creates a new bucket_list" do
-        expect { create_bucket_list_request }.to change(
-          BucketList, :count
+        expect { create_list_request }.to change(
+          List, :count
         ).by(1)
       end
 
       it "sets @bucketlist to an instance of BucketList" do
-        create_bucket_list_request
-        expect(assigns(:bucket_list)).to be_a(BucketList)
-        expect(assigns(:bucket_list)).to be_persisted
+        create_list_request
+        expect(assigns(:list)).to be_a(List)
+        expect(assigns(:list)).to be_persisted
       end
 
       it "returns http success" do
-        create_bucket_list_request
+        create_list_request
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid params" do
-      let(:invalid_create_bucket_list_request) do
+      let(:invalid_create_list_request) do
         post :create,
              params: {
-               bucket_list: attributes_for(
-                 :bucket_list,
+               list: attributes_for(
+                 :list,
                  name: nil
                )
              }
       end
 
       it "does not create a new bucket_list" do
-        expect { invalid_create_bucket_list_request }.to_not change(
-          BucketList, :count
+        expect { invalid_create_list_request }.to_not change(
+          List, :count
         )
       end
 
       it "sets @bucket_list to a newly created but unsaved bucket_list" do
-        invalid_create_bucket_list_request
-        expect(assigns(:bucket_list)).to be_a_new(BucketList)
+        invalid_create_list_request
+        expect(assigns(:list)).to be_a_new(List)
       end
 
       it "returns unprocessable_entity status" do
-        invalid_create_bucket_list_request
+        invalid_create_list_request
         expect(response.status).to eq(422)
       end
     end
@@ -140,14 +140,14 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
       before(:each) do
         put :update,
             params: {
-              id: bucket_list_unit.id,
-              bucket_list: new_attributes
+              id: list_unit.id,
+              list: new_attributes
             }
-        bucket_list_unit.reload
+        list_unit.reload
       end
 
       it "updates the name of the requested bucket_list" do
-        expect(bucket_list_unit.name).to eq new_attributes[:name]
+        expect(list_unit.name).to eq new_attributes[:name]
       end
 
       it "returns http success" do
@@ -163,18 +163,18 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
       before(:each) do
         put :update,
             params: {
-              id: bucket_list_unit.id,
+              id: list_unit.id,
               bucket_list: invalid_new_attributes
             }
-        bucket_list_unit.reload
+        list_unit.reload
       end
 
       it "sets @bucket_list to bucket_list" do
-        expect(assigns(:bucket_list)).to eq(bucket_list_unit)
+        expect(assigns(:list)).to eq(list_unit)
       end
 
       it "does not update the name of the requested bucket_list" do
-        expect(bucket_list_unit.name).to_not eq invalid_new_attributes[:name]
+        expect(list_unit.name).to_not eq invalid_new_attributes[:name]
       end
 
       it "returns unprocessable_entity status" do
@@ -184,16 +184,16 @@ RSpec.describe Api::V1::BucketListsController, type: :controller do
   end
 
   describe "#destroy" do
-    let(:delete_bucket_list_request) do
-      delete :destroy, params: { id: bucket_list_unit.id }
+    let(:delete_list_request) do
+      delete :destroy, params: { id: list_unit.id }
     end
 
     before(:each) do
-      delete_bucket_list_request
+      delete_list_request
     end
 
     it "destroys a bucket_list" do
-      expect(BucketList.where(id: bucket_list_unit.id)).not_to exist
+      expect(List.where(id: list_unit.id)).not_to exist
     end
 
     it "returns http success" do

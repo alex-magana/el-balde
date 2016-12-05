@@ -13,7 +13,7 @@ RSpec.describe User, type: :model do
 
   it { is_expected.to belong_to(:role) }
   it { is_expected.to have_many(:authentications) }
-  it { is_expected.to have_many(:bucket_lists) }
+  it { is_expected.to have_many(:lists) }
 
   it { is_expected.to have_secure_password }
 

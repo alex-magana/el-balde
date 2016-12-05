@@ -49,11 +49,6 @@ RSpec.configure do |config|
 
   config.before(:suite) { DatabaseCleaner.clean_with :truncation }
 
-  # config.before(:suite) do
-  #   el_balde = Seed.new
-  #   el_balde.create_all
-  # end
-
   config.before(:each) { DatabaseCleaner.strategy = :transaction }
 
   # config.before(:each, js: true) { DatabaseCleaner.strategy = :truncation }

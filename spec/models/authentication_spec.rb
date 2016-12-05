@@ -14,12 +14,22 @@ RSpec.describe Authentication, type: :model do
   it { is_expected.to validate_presence_of(:token) }
 
   describe ".validate_token" do
-    it "is expected to return the status of a token" do
-      auth = create :authentication, user: user, status: true
+    context "with an existing token" do
+      it "is expected to return the status of a token" do
+        auth = create :authentication, user: user, status: true
 
-      expect(
-        Authentication.validate_token(auth.token)
-      ).to eq auth.status
+        expect(
+          Authentication.validate_token(auth.token)
+        ).to eq auth.status
+      end
+    end
+
+    context "with an non-existing token" do
+      it "returnsvalue false" do
+        expect(
+          Authentication.validate_token("token")
+        ).to eq false
+      end
     end
   end
 

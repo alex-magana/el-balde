@@ -29,7 +29,7 @@ class ApplicationController < ActionController::API
   end
 
   def invalid_authentication
-    render_response({ error: invalid_request }, :unauthorized)
+    render_response({ error: unauthorized_request }, :unauthorized)
   end
 
   private

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161123142701) do
+ActiveRecord::Schema.define(version: 20161202085404) do
 
   create_table "authentications", force: :cascade do |t|
     t.string   "token"
@@ -21,21 +21,21 @@ ActiveRecord::Schema.define(version: 20161123142701) do
     t.index ["user_id"], name: "index_authentications_on_user_id"
   end
 
-  create_table "bucket_list_items", force: :cascade do |t|
+  create_table "items", force: :cascade do |t|
     t.string   "name"
     t.boolean  "done",           default: false
-    t.integer  "bucket_list_id"
+    t.integer  "list_id"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.index ["bucket_list_id"], name: "index_bucket_list_items_on_bucket_list_id"
+    t.index ["list_id"], name: "index_items_on_list_id"
   end
 
-  create_table "bucket_lists", force: :cascade do |t|
+  create_table "lists", force: :cascade do |t|
     t.string   "name"
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_bucket_lists_on_user_id"
+    t.index ["user_id"], name: "index_lists_on_user_id"
   end
 
   create_table "roles", force: :cascade do |t|

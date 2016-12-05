@@ -1,7 +1,9 @@
 class User < ApplicationRecord
+  extend Concerns::ModelMessages
+
   belongs_to :role
   has_many :authentications, dependent: :destroy
-  has_many :bucket_lists, dependent: :destroy
+  has_many :lists, dependent: :destroy
 
   has_secure_password
 
@@ -12,15 +14,13 @@ class User < ApplicationRecord
             presence: true,
             format: { with: VALID_REGEX_NAME },
             length: { minimum: 3,
-                      message: "Too short. The minimum length"\
-                               " is 3 characters." }
+                      message: name_length }
 
   validates :last_name,
             presence: true,
             format: { with: VALID_REGEX_NAME },
             length: { minimum: 3,
-                      message: "Too short. The minimum length"\
-                               " is 3 characters." }
+                      message: name_length }
 
   validates :email,
             presence: true,
