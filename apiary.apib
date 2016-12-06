@@ -67,15 +67,13 @@ Create a user.
     + Body
 
             {
-                "user": {
-                            "first_name": "<first_name>",
-                            "last_name": "<last_name>",
-                            "email": "<email>",
-                            "password": "<password>",
-                            "password_confirmation": "<password>"
-                        }
+                "first_name": "<first_name>",
+                "last_name": "<last_name>",
+                "email": "<email>",
+                "password": "<password>",
+                "password_confirmation": "<password>"
             }
-
+        
 + Response 201 (application/json)
 
     + Body
@@ -125,10 +123,8 @@ Update a user.
     + Body
 
             {
-                "user": {
-                            "field_name": "<field_value>",
-                            "password": "<password>"
-                        }
+                "field_name": "<field_value>",
+                "password": "<password>"
             }
 
 + Response 200 (application/json)
