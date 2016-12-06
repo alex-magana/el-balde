@@ -13,7 +13,7 @@ module Api
         if @user.save
           render_response(@user, :created, api_v1_user_url(@user))
         else
-          render_response(@user.errors, :unprocessable_entity)
+          render_response({ error: @user.errors }, :unprocessable_entity)
         end
       end
 
@@ -37,7 +37,8 @@ module Api
       end
 
       def user_params
-        params.require(:user).permit(
+        params.permit(
+          :id,
           :first_name,
           :last_name,
           :email,

@@ -39,12 +39,10 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     context "with valid params" do
       let(:create_user_request) do
         post :create,
-             params: {
-               user: attributes_for(
-                 :user,
-                 password_confirmation: "anewpassword"
-               ),
-             }
+             params: attributes_for(
+               :user,
+               password_confirmation: "anewpassword"
+             )
       end
 
       it "creates a new user" do
@@ -97,6 +95,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     context "with valid params" do
       let(:new_attributes) do
         {
+          id: user.id,
           first_name: Faker::Name.first_name,
           email: Faker::Internet.email,
           password: user.password
@@ -105,7 +104,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       before(:each) do
         put :update,
-            params: { id: user.id, user: new_attributes }
+            params: new_attributes
         user.reload
       end
 

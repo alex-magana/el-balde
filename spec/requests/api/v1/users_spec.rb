@@ -50,9 +50,7 @@ RSpec.describe "Users", type: :request do
     context "with valid params" do
       let(:create_user_request) do
         post "/api/v1/users",
-             params: {
-               user: attributes_for(:user)
-             },
+             params: attributes_for(:user),
              headers: set_request_authentication_header
       end
 
@@ -62,7 +60,7 @@ RSpec.describe "Users", type: :request do
 
       it "creates a new user" do
         endpoint_response = json_response(response.body)
-        expect(endpoint_response[:email]).to eq request.params[:user][:email]
+        expect(endpoint_response[:email]).to eq request.params[:email]
       end
 
       it "returns a status code denoting success" do
@@ -73,9 +71,7 @@ RSpec.describe "Users", type: :request do
     context "with invalid params" do
       let(:invalid_create_user_request) do
         post "/api/v1/users",
-             params: {
-               user: attributes_for(:user, first_name: nil)
-             },
+             params: attributes_for(:user, first_name: nil),
              headers: set_request_authentication_header
       end
 
@@ -85,7 +81,7 @@ RSpec.describe "Users", type: :request do
 
       it "returns an error" do
         endpoint_response = json_response(response.body)
-        expect(endpoint_response[:first_name]).to include "is invalid"
+        expect(endpoint_response[:error][:first_name]).to include "is invalid"
       end
 
       it "returns a status code denoting unprocessable_entity" do
@@ -106,9 +102,7 @@ RSpec.describe "Users", type: :request do
 
       before(:each) do
         put "/api/v1/users/#{user.id}",
-            params: {
-              user: new_attributes
-            },
+            params: new_attributes,
             headers: set_request_authentication_header
       end
 
@@ -135,9 +129,7 @@ RSpec.describe "Users", type: :request do
 
       before(:each) do
         put "/api/v1/users/#{user.id}",
-            params: {
-              user: new_attributes
-            },
+            params: new_attributes,
             headers: set_request_authentication_header
       end
 
