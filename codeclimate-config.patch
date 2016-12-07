@@ -1,0 +1,41 @@
+diff --git a/.codeclimate.yml b/.codeclimate.yml
+index e69de29..3691d26 100644
+--- a/.codeclimate.yml
++++ b/.codeclimate.yml
+@@ -0,0 +1,36 @@
++---
++engines:
++  brakeman:
++    enabled: true
++  bundler-audit:
++    enabled: true
++  duplication:
++    enabled: true
++    config:
++      languages:
++      - ruby
++      - javascript
++      - python
++      - php
++  fixme:
++    enabled: true
++  rubocop:
++    enabled: true
++ratings:
++  paths:
++  - Gemfile.lock
++  - "**.erb"
++  - "**.haml"
++  - "**.rb"
++  - "**.rhtml"
++  - "**.slim"
++  - "**.inc"
++  - "**.js"
++  - "**.jsx"
++  - "**.module"
++  - "**.php"
++  - "**.py"
++exclude_paths:
++- config/
++- db/
++- spec/
