@@ -56,7 +56,7 @@ Logs a user out.
 
 ## Group Users
 
-## User Creation [/users/]
+## User Creation [/users]
 
 ### Create a new user [POST]
 
@@ -159,7 +159,7 @@ Delete a user.
 
 ## Group BucketLists
 
-## Bucket lists Creation [/bucketlists/]
+## Bucket lists Creation [/bucketlists]
 
 ### Create a new bucket list [POST]
 
@@ -175,11 +175,10 @@ The body section of the request constitutes the name of the bucket list to be cr
 
     + Body
     
-            {
-                "list": { 
-                            "name": "<bucket_list_name>"
-                        }
+            { 
+                "name": "<bucket_list_name>"
             }
+            
 
 + Response 201 (application/json)
 
@@ -199,7 +198,7 @@ The body section of the request constitutes the name of the bucket list to be cr
 List all bucketlists and their corresponding items 
 for the logged in user.
 
-Optional query parameters:
+Optional request parameters:
 
 - `page` default is page 1.
 - `limit` minimum is 20 and maximum 100.
@@ -310,9 +309,7 @@ Update the given bucket list.
     + Body
 
             {
-                "list": {
-                                    "field_name": "<field_value>"
-                               }
+                "field_name": "<field_value>"
             }
 
 + Response 200 (application/json)
@@ -346,7 +343,7 @@ Delete this single bucket list.
                  "message": "Bucket list deleted successfully."
             }
 
-## Bucket list search [/bucketlists/?q={name}]
+## Bucket list search [/bucketlists]
 
 ### Search a bucket list by name [GET]
 
@@ -355,6 +352,19 @@ A search can be made for a bucket list by providing the
 `<name>` is the name of the bucket list you want to search.
 The response received constitutes the bucket lists containing the supplied
 string in their name.
+
+Optional request parameters:
+
+- `page` default is page 1.
+- `limit` minimum is 20 and maximum 100.
+
++ Parameters
+
+    + q (required, string) - the string to search
+    + page (optional, int) - the page to receive
+        + Default: 1
+    + limit (optional, int) - the number of bucketlists per page result
+        + Default: 20
 
 + Request (application/json)
 
@@ -440,9 +450,7 @@ Create a new item in the given bucket list.
     + Body
 
             {
-                "item": {
-                            "name": "<name>"
-                        }
+                "name": "<name>"
             }
 
 + Response 201 (application/json)
@@ -544,10 +552,8 @@ Update a bucket list item.
     + Body
 
             {
-                "item": {
-                            "done": true,
-                            "name": "<new name>"
-                        }
+                "done": true,
+                "name": "<new name>"
             }
 
 + Response 200 (application/json)
