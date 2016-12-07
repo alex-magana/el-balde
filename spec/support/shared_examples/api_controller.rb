@@ -33,15 +33,4 @@ RSpec.shared_examples "api_controller" do
       end
     end
   end
-
-  describe "rescues from ActiveRecord::parameterMissing" do
-    context "on #create" do
-      before do
-        post :create, params: { wrong_params: { foo: :bar } }
-      end
-
-      it { expect(response.status).to eq(422) }
-      it { expect(response.body).to match(/error/) }
-    end
-  end
 end

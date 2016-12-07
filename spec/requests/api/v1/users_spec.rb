@@ -16,6 +16,7 @@ RSpec.describe "Users", type: :request do
 
       it "returns a user" do
         endpoint_response = json_response(response.body)
+
         expect(endpoint_response[:name]).to include user.first_name
         expect(endpoint_response[:email]).to include user.email
       end
@@ -37,6 +38,7 @@ RSpec.describe "Users", type: :request do
 
       it "returns an error" do
         endpoint_response = json_response(response.body)
+
         expect(endpoint_response[:error]).to eq "Record not found."
       end
 
@@ -44,14 +46,15 @@ RSpec.describe "Users", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    include_context "without an authorization token", :get, "/api/v1/users/1"
   end
 
   describe "POST /api/v1/users" do
     context "with valid params" do
       let(:create_user_request) do
         post "/api/v1/users",
-             params: attributes_for(:user),
-             headers: set_request_authentication_header
+             params: attributes_for(:user)
       end
 
       before(:each) do
@@ -60,6 +63,7 @@ RSpec.describe "Users", type: :request do
 
       it "creates a new user" do
         endpoint_response = json_response(response.body)
+
         expect(endpoint_response[:email]).to eq request.params[:email]
       end
 
@@ -71,8 +75,7 @@ RSpec.describe "Users", type: :request do
     context "with invalid params" do
       let(:invalid_create_user_request) do
         post "/api/v1/users",
-             params: attributes_for(:user, first_name: nil),
-             headers: set_request_authentication_header
+             params: attributes_for(:user, first_name: nil)
       end
 
       before(:each) do
@@ -81,6 +84,7 @@ RSpec.describe "Users", type: :request do
 
       it "returns an error" do
         endpoint_response = json_response(response.body)
+
         expect(endpoint_response[:error][:first_name]).to include "is invalid"
       end
 
@@ -136,33 +140,39 @@ RSpec.describe "Users", type: :request do
       it "does not update the user first_name and email" do
         endpoint_response = json_response(response.body)
 
-        expect(endpoint_response[:first_name]).to include "Too short. The "\
-          "minimum length is 3 characters."
-        expect(endpoint_response[:email]).to include "can't be blank"
+        expect(endpoint_response[:error][:first_name]).to include "Too short. "\
+          "The minimum length is 3 characters."
+        expect(endpoint_response[:error][:email]).to include "can't be blank"
       end
 
       it "returns http status unprocessable_entity" do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    include_context "without an authorization token", :put, "/api/v1/users/1"
   end
 
   describe "DELETE /api/v1/users/:id" do
-    let(:delete_user_request) do
-      delete "/api/v1/users/#{user.id}",
-             headers: set_request_authentication_header
+    context "with a valid user id" do
+      let(:delete_user_request) do
+        delete "/api/v1/users/#{user.id}",
+               headers: set_request_authentication_header
+      end
+
+      before(:each) do
+        delete_user_request
+      end
+
+      it "destroys a user" do
+        expect(User.where(id: user.id)).not_to exist
+      end
+
+      it "returns http success" do
+        expect(response).to have_http_status(:success)
+      end
     end
 
-    before(:each) do
-      delete_user_request
-    end
-
-    it "destroys a user" do
-      expect(User.where(id: user.id)).not_to exist
-    end
-
-    it "returns http success" do
-      expect(response).to have_http_status(:success)
-    end
+    include_context "without an authorization token", :delete, "/api/v1/users/1"
   end
 end

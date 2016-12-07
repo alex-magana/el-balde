@@ -18,7 +18,9 @@ RSpec.describe Api::V1::ListsController, type: :controller do
 
       before(:each) do
         create_list(:list, 50, user: user)
-        get :index, params: { page: parameter_page, limit: parameter_limit }
+        request_params = { page: parameter_page, limit: parameter_limit }
+
+        get :index, params: request_params
       end
 
       it "returns bucket lists equivalent to the set limit" do
@@ -33,7 +35,8 @@ RSpec.describe Api::V1::ListsController, type: :controller do
     context "with parameter q" do
       let(:parameter_q) { list_unit.name }
       before(:each) do
-        get :index, params: { q: parameter_q }
+        request_params = { q: parameter_q }
+        get :index, params: request_params
       end
 
       it "sets @lists to a list of all created bucket lists" do
@@ -45,7 +48,9 @@ RSpec.describe Api::V1::ListsController, type: :controller do
   describe "#show" do
     context "with valid params" do
       before(:each) do
-        get :show, params: { id: list_unit.id }
+        request_params = { id: list_unit.id }
+
+        get :show, params: request_params
       end
 
       it "sets @bucket_list to a record of an existing bucket list" do
@@ -59,7 +64,8 @@ RSpec.describe Api::V1::ListsController, type: :controller do
 
     context "with invalid params" do
       before(:each) do
-        get :show, params: { id: list_unit.id * 0 }
+        request_params = { id: list_unit.id * 0 }
+        get :show, params: request_params
       end
 
       it "sets @bucket_list to nil" do
@@ -75,13 +81,10 @@ RSpec.describe Api::V1::ListsController, type: :controller do
   describe "#create" do
     context "with valid params" do
       let(:create_list_request) do
+        request_params = attributes_for(:list, user_id: user.id)
+
         post :create,
-             params: {
-               list: attributes_for(
-                 :list,
-                 user_id: user.id
-               )
-             }
+             params: request_params
       end
 
       it "creates a new bucket_list" do
@@ -92,25 +95,24 @@ RSpec.describe Api::V1::ListsController, type: :controller do
 
       it "sets @bucketlist to an instance of BucketList" do
         create_list_request
+
         expect(assigns(:list)).to be_a(List)
         expect(assigns(:list)).to be_persisted
       end
 
       it "returns http success" do
         create_list_request
+
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid params" do
       let(:invalid_create_list_request) do
+        request_params = attributes_for(:list, name: nil)
+
         post :create,
-             params: {
-               list: attributes_for(
-                 :list,
-                 name: nil
-               )
-             }
+             params: request_params
       end
 
       it "does not create a new bucket_list" do
@@ -121,11 +123,13 @@ RSpec.describe Api::V1::ListsController, type: :controller do
 
       it "sets @bucket_list to a newly created but unsaved bucket_list" do
         invalid_create_list_request
+
         expect(assigns(:list)).to be_a_new(List)
       end
 
       it "returns unprocessable_entity status" do
         invalid_create_list_request
+
         expect(response.status).to eq(422)
       end
     end
@@ -139,10 +143,9 @@ RSpec.describe Api::V1::ListsController, type: :controller do
 
       before(:each) do
         put :update,
-            params: {
-              id: list_unit.id,
-              list: new_attributes
-            }
+            params: new_attributes.merge(
+              id: list_unit.id
+            )
         list_unit.reload
       end
 
@@ -162,10 +165,9 @@ RSpec.describe Api::V1::ListsController, type: :controller do
 
       before(:each) do
         put :update,
-            params: {
-              id: list_unit.id,
-              bucket_list: invalid_new_attributes
-            }
+            params: invalid_new_attributes.merge(
+              id: list_unit.id
+            )
         list_unit.reload
       end
 

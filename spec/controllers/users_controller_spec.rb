@@ -12,7 +12,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe "#show" do
     context "with valid id" do
       before(:each) do
-        get :show, params: { id: user.id }
+        request_params = { id: user.id }
+
+        get :show, params: request_params
       end
 
       it "sets @user to a record of an existing user" do
@@ -26,7 +28,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     context "with invalid id" do
       before(:each) do
-        get :show, params: { id: "id" }
+        request_params = { id: "id" }
+
+        get :show, params: request_params
       end
 
       it "returns a status code denoting not_found" do
@@ -38,11 +42,13 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe "#create", skip_before: true do
     context "with valid params" do
       let(:create_user_request) do
+        request_params = attributes_for(
+          :user,
+          password_confirmation: "anewpassword"
+        )
+
         post :create,
-             params: attributes_for(
-               :user,
-               password_confirmation: "anewpassword"
-             )
+             params: request_params
       end
 
       it "creates a new user" do
@@ -51,28 +57,30 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       it "sets @user to the newly created user" do
         create_user_request
+
         expect(assigns(:user)).to be_a(User)
         expect(assigns(:user)).to be_persisted
       end
 
       it "returns http success" do
         create_user_request
+
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid params" do
       let(:invalid_create_user_request) do
+        request_params = attributes_for(
+          :user,
+          first_name: nil,
+          last_name: nil,
+          email: "abc.com",
+          password_confirmation: "anewpassword"
+        )
+
         post :create,
-             params: {
-               user: attributes_for(
-                 :user,
-                 first_name: nil,
-                 last_name: nil,
-                 email: "abc.com",
-                 password_confirmation: "anewpassword"
-               )
-             }
+             params: request_params
       end
 
       it "does not create a new user" do
@@ -81,11 +89,36 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       it "sets @customer to a newly created but unsaved user" do
         invalid_create_user_request
+
         expect(assigns(:user)).to be_a_new(User)
       end
 
       it "returns unprocessable_entity status" do
         invalid_create_user_request
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "with missing params" do
+      let(:invalid_missing_params) do
+        request_params = { first_name: nil, last_name: nil }
+
+        post :create,
+             params: request_params
+      end
+
+      before(:each) do
+        invalid_missing_params
+      end
+
+      it "returns an error" do
+        endpoint_response = json_response(response.body)
+
+        expect(endpoint_response[:error][:email]).to include "is invalid"
+      end
+
+      it "returns a status code denoting unprocessable_entity" do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -128,7 +161,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       before(:each) do
         put :update,
-            params: { id: user.id, user: invalid_new_attributes }
+            params: invalid_new_attributes.merge(id: user.id)
         user.reload
       end
 

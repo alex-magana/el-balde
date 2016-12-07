@@ -19,7 +19,7 @@ module Api
         if @item.save
           render_response(@item, :created, api_v1_list_item_url(@list, @item))
         else
-          render_response(@item.errors, :unprocessable_entity)
+          render_response({ error: @item.errors }, :unprocessable_entity)
         end
       end
 
@@ -27,7 +27,7 @@ module Api
         if @item.update(item_params)
           render_response(@item)
         else
-          render_response(@item.errors, :unprocessable_entity)
+          render_response({ error: @item.errors }, :unprocessable_entity)
         end
       end
 
@@ -47,7 +47,7 @@ module Api
       end
 
       def item_params
-        params.require(:item).permit(:name, :done, :list_id)
+        params.permit(:name, :done, :list_id)
       end
     end
   end

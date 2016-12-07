@@ -8,11 +8,9 @@ RSpec.describe Api::V1::AuthenticationsController, type: :controller do
   describe "#login" do
     context "with valid params" do
       let(:login_request) do
+        request_params = { email: user.email, password: user.password }
         post :login,
-             params: {
-               email: user.email,
-               password: user.password
-             }
+             params: request_params
       end
 
       before(:each) do
@@ -26,11 +24,9 @@ RSpec.describe Api::V1::AuthenticationsController, type: :controller do
 
     context "with invalid params" do
       let(:invalid_login_request) do
+        request_params = { email: "", password: user.password }
         post :login,
-             params: {
-               email: "",
-               password: user.password
-             }
+             params: request_params
       end
 
       before(:each) do
@@ -44,11 +40,9 @@ RSpec.describe Api::V1::AuthenticationsController, type: :controller do
 
     context "with an existing valid token" do
       let(:login_request) do
+        request_params = { email: user.email, password: user.password }
         post :login,
-             params: {
-               email: user.email,
-               password: user.password
-             }
+             params: request_params
       end
 
       before(:each) do
@@ -66,11 +60,9 @@ RSpec.describe Api::V1::AuthenticationsController, type: :controller do
 
     context "without an existing token" do
       let(:login_request) do
+        request_params = { email: user.email, password: user.password }
         post :login,
-             params: {
-               email: user.email,
-               password: user.password
-             }
+             params: request_params
       end
 
       before(:each) do

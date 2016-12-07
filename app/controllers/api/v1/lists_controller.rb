@@ -23,7 +23,7 @@ module Api
         if @list.save
           render_response(@list, :created, api_v1_list_url(@list))
         else
-          render_response(@list.errors, :unprocessable_entity)
+          render_response({ error: @list.errors }, :unprocessable_entity)
         end
       end
 
@@ -31,7 +31,7 @@ module Api
         if @list.update(list_params)
           render_response(@list)
         else
-          render_response(@list.errors, :unprocessable_entity)
+          render_response({ error: @list.errors }, :unprocessable_entity)
         end
       end
 
@@ -57,12 +57,14 @@ module Api
 
       def catalog
         List.catalog(
-          current_user, index_params[:page].to_i, index_params[:limit].to_i
+          current_user,
+          index_params[:page].to_i,
+          index_params[:limit].to_i
         )
       end
 
       def list_params
-        params.require(:list).permit(:name, :user_id)
+        params.permit(:name, :user_id)
       end
 
       def index_params

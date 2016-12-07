@@ -8,37 +8,44 @@ RSpec.describe "Authentications", type: :request do
   describe "POST /auth/login" do
     context "with valid params" do
       let(:login_request) do
+        request_params = { email: user.email, password: user.password }
+
         post "/api/v1/auth/login",
-             params: { email: user.email, password: user.password }
+             params: request_params
       end
 
       it "creates a token for the user" do
         login_request
         endpoint_response = json_response(response.body)
+
         expect(endpoint_response[:auth_token]).to_not be nil
         expect(endpoint_response[:message]).to_not be nil
       end
 
       it "returns http success" do
         login_request
+
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid params" do
       let(:invalid_login_request) do
+        request_params = { email: "", password: "password" }
         post "/api/v1/auth/login",
-             params: { email: "", password: "password" }
+             params: request_params
       end
 
       it "notify's the user of invalid credentials" do
         invalid_login_request
         endpoint_response = json_response(response.body)
+
         expect(endpoint_response[:error]).to include "Invalid"
       end
 
       it "returns http unathorized" do
         invalid_login_request
+
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -53,12 +60,14 @@ RSpec.describe "Authentications", type: :request do
 
       it "terminates the user's session" do
         logout_request
+
         endpoint_response = json_response(response.body)
         expect(endpoint_response[:message]).to eq "Logout successful."
       end
 
       it "returns http success" do
         logout_request
+
         expect(response).to have_http_status(:success)
       end
     end
@@ -72,13 +81,19 @@ RSpec.describe "Authentications", type: :request do
       it "fails to terminate the user's session" do
         invalid_logout_request
         endpoint_response = json_response(response.body)
+
         expect(endpoint_response[:error]).to eq unauthorized_request
       end
 
       it "returns http unathorized" do
         invalid_logout_request
+
         expect(response).to have_http_status(:unauthorized)
       end
     end
+
+    include_context "without an authorization token",
+                    :get,
+                    "/api/v1/auth/logout"
   end
 end

@@ -16,12 +16,14 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
       before do
         create_list(:item, 50, list_id: list.id)
+        request_params = {
+          list_id: list.id,
+          page: parameter_page,
+          limit: parameter_limit
+        }
+
         get :index,
-            params: {
-              list_id: list.id,
-              page: parameter_page,
-              limit: parameter_limit
-            }
+            params: request_params
       end
 
       it "returns bucket list items equivalent to the set limit" do
@@ -39,13 +41,14 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
       before do
         create_list(:item, 40, list_id: list.id)
+        request_params = {
+          list_id: list.id,
+          page: parameter_page,
+          limit: parameter_limit
+        }
 
         get :index,
-            params: {
-              list_id: list.id,
-              page: parameter_page,
-              limit: parameter_limit
-            }
+            params: request_params
       end
 
       it "returns results equal to the default limit of 20" do
@@ -62,12 +65,14 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       parameter_limit = "$#%!1}"
 
       before do
+        request_params = {
+          list_id: list.id * 0,
+          page: parameter_page,
+          limit: parameter_limit
+        }
+
         get :index,
-            params: {
-              list_id: list.id * 0,
-              page: parameter_page,
-              limit: parameter_limit
-            }
+            params: request_params
       end
 
       it "returns an error message denoting absence of record" do
@@ -86,7 +91,9 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       before(:each) do
         create_list(:item, 20, list_id: list.id)
         item = Item.find(10)
-        get :show, params: { list_id: list.id, id: item.id }
+        request_params = { list_id: list.id, id: item.id }
+
+        get :show, params: request_params
       end
 
       it "returns a response with a record of an existing bucket list item" do
@@ -102,10 +109,9 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
     context "with invalid params" do
       before(:each) do
-        get :show, params: {
-          list_id: 0,
-          id: "$%^^%2"
-        }
+        request_params = { list_id: 0, id: "$%^^%2" }
+
+        get :show, params: request_params
       end
 
       it "returns a message denoting record is absent" do
@@ -122,14 +128,10 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   describe "#create" do
     context "with valid params" do
       let(:create_item_request) do
+        request_params = attributes_for(:item, list_id: list.id)
+
         post :create,
-             params: {
-               list_id: list.id,
-               item: attributes_for(
-                 :item,
-                 list_id: list.id
-               )
-             }
+             params: request_params
       end
 
       it "creates a new bucket_list" do
@@ -138,27 +140,28 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
       it "sets @user to the newly created user" do
         create_item_request
+
         expect(assigns(:item)).to be_a(Item)
         expect(assigns(:item)).to be_persisted
       end
 
       it "returns http success" do
         create_item_request
+
         expect(response).to have_http_status(:success)
       end
     end
 
     context "with invalid params" do
       let(:invalid_create_item_request) do
+        request_params = attributes_for(
+          :item,
+          name: nil,
+          list_id: list.id
+        )
+
         post :create,
-             params: {
-               list_id: list.id,
-               item: attributes_for(
-                 :item,
-                 name: nil,
-                 list_id: list.id
-               )
-             }
+             params: request_params
       end
 
       it "does not create a new item" do
@@ -168,11 +171,13 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       it "sets @item to a newly "\
         "created but unsaved item" do
         invalid_create_item_request
+
         expect(assigns(:item)).to be_a_new(Item)
       end
 
       it "returns unprocessable_entity status" do
         invalid_create_item_request
+
         expect(response.status).to eq 422
       end
     end
@@ -190,11 +195,10 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
       before(:each) do
         put :update,
-            params: {
+            params: new_attributes.merge(
               list_id: list.id,
-              id: item.id,
-              item: new_attributes
-            }
+              id: item.id
+            )
         item.reload
       end
 
@@ -218,11 +222,10 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
       before(:each) do
         put :update,
-            params: {
+            params: invalid_new_attributes.merge(
               list_id: list.id,
-              id: item.id,
-              item: invalid_new_attributes
-            }
+              id: item.id
+            )
         list.reload
       end
 

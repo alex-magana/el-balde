@@ -21,7 +21,7 @@ module Api
         if @user.update(user_params)
           render_response(@user)
         else
-          render_response(@user.errors, :unprocessable_entity)
+          render_response({ error: @user.errors }, :unprocessable_entity)
         end
       end
 

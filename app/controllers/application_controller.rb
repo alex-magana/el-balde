@@ -5,16 +5,11 @@ class ApplicationController < ActionController::API
   include Concerns::Response
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
-  rescue_from ActionController::ParameterMissing, with: :missing_param_error
 
   attr_reader :current_user, :token
 
   def not_found
     render_response({ error: record_not_found }, :not_found)
-  end
-
-  def missing_param_error(exception)
-    render_response({ error: exception.message }, :unprocessable_entity)
   end
 
   protected
