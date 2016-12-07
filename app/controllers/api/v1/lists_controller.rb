@@ -47,7 +47,7 @@ module Api
       end
 
       def set_user
-        params[:list][:user_id] = current_user.id
+        params[:user_id] = current_user.id
       end
 
       def search_by_name(name)
